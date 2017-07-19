@@ -20,11 +20,13 @@
 	</head>
 	<body>
 
+        <script src="http://d3js.org/d3.v4.min.js"></script>
+
 		<!-- Header -->
 			<section id="header">
 				<div class="inner">
 					<span class="image"><img src="images/airbnbWhiteSmall.png" alt="Airbnb" /></span>
-                    <h1>To Be Or Not To <strong>Airbnb</strong><br /></h1>
+                    <h1><strong>Airbnb On A Budget</strong><br /></h1>
                     <h2>An information visualization</h2>
 
                     <p>Created by Clifford Panos,  Abigail Farr,  & Kendal Lin.<br />
@@ -42,8 +44,8 @@
 					<div class="row 150%">
 						<div class="6u 12u$(medium)">
 							<header class="major">
-								<h2>Airbnb Visualization<br />
-								Google Maps & d3</h2>
+								<h2><strong>Airbnb Visualization</strong><br />
+								Created using d3</h2>
 							</header>
 							<p>This information visualization allows users to explore average listing prices in specific neighborhoods as well as filter locations by room type, average rating, and number of occupants. The vis also allows hosts to observe which listings are similar to theirs in their area by filtering using the aforementioned characteristics.</p>
 						</div>
@@ -67,6 +69,27 @@
 								<li><span class="icon style5 major fa-desktop"></span></li>
 								<li><span class="icon style6 major fa-calendar"></span></li>
 							</ul>
+                            <script>
+
+                                // set the dimensions and margins of the graph
+                                var margin = {top: 40, right: 40, bottom: 30, left: 40},
+                                    width = 1000 - margin.left - margin.right,
+                                    height = 700 - margin.top - margin.bottom;
+
+                                var svg = d3.select("body")
+                                    .append("svg")
+                                    .attr("width", width + margin.left + margin.right)
+                                    .attr("height", height + margin.top + margin.bottom)
+                                    .append("g")
+                                      .attr("transform",
+                                            "translate(" + margin.left + "," + margin.top + ")");
+
+                                svg.append("rect")
+                                    .attr("width", "100%")
+                                    .attr("height", "100%")
+                                    .attr("fill", "#cfcfcf");
+
+                            </script>
 						</div>
 						<div class="6u$ 12u$(medium)">
 							<header class="major">
