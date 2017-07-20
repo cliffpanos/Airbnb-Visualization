@@ -2,10 +2,44 @@
 @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic");
 
 /*
-	Photon by HTML5 UP
+	Photon by HTML5 UP + Code by cliff for svg containers below
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
+
+/* SVG resizability responsiveness by Clifford Panos & Sara Soueidan */
+    .svg-container-left {
+        display: inline-block;
+        position: relative;
+        width: 65%;
+        padding-bottom: 76%; /* aspect ratio */
+        padding-right: 3.5%;
+        vertical-align: top;
+        overflow: hidden;
+    }
+    .svg-container-right {
+        display: inline-block;
+        position: relative;
+        width: 35%;
+        padding-bottom: 76%; /* aspect ratio */
+        vertical-align: top;
+        overflow: hidden;
+    }
+    .svg-container-full {
+        display: inline-block;
+        position: relative;
+        width: 100%;
+        padding-bottom: 83%; /* aspect ratio */
+        vertical-align: top;
+        overflow: hidden;
+    }
+    .svg-content-responsive {
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+/* Allows resizing when window resizes */
 
 /* Reset */
 
