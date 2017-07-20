@@ -21,7 +21,7 @@
 	<body>
 
         <!-- Provide the source code for the d3 library -->
-        <script src="http://d3js.org/d3.v4.min.js"></script>
+        <script src="assets/js/d3.min.js"></script>
 
 		<!-- Header -->
 			<section id="header">
@@ -59,10 +59,10 @@
 
 		<!-- Two -->
 			<section id="two" class="main style2">
-				<div class="container">
-					<div class="row 150%">
+				<div class="container" id="containerCliff">
+					<div class="row 150%" id="choropleth">
 
-                        <div class="6u 12u$(medium)" id="choropleth">
+                        <div class="6u 12u$(medium)">
 							<!--<ul class="major-icons">
 								<li><span class="icon style1 major fa-code"></span></li>
 								<li><span class="icon style2 major fa-bolt"></span></li>
@@ -71,6 +71,62 @@
 								<li><span class="icon style5 major fa-desktop"></span></li>
 								<li><span class="icon style6 major fa-calendar"></span></li>
 							</ul> -->
+                            <script>
+                                var outer = window.innerWidth - parseInt(d3.select('#choropleth').style('width'), 10);
+                                var margin = {top: 0, right: 0, bottom: 0, left: 0, inner: 10, outer: outer};
+                                var csvgwidth = (window.innerWidth - margin.outer - margin.inner) / 1.5;
+                                var gsvgwidth = (window.innerWidth - margin.outer) / 3;
+                                var bsvgwidth = (window.innerWidth - margin.outer);
+                                var height1 = csvgwidth * 1.1;
+                                var height2 = bsvgwidth * 1.0;
+
+                                var csvg = d3.select("#choropleth")
+                                    .append("svg")
+                                    .attr("width", csvgwidth + margin.left + margin.right)
+                                    .attr("height", height1 + margin.top + margin.bottom)
+                                    .append("g");
+
+                                csvg.append("rect")
+                                    .attr("width", "100%")
+                                    .attr("height", "92.5%")
+                                    .attr("rx", 5)
+                                    .attr("fill", "white");
+
+                                var gsvg = d3.select("#choropleth")
+                                    .append("svg")
+                                    .attr("width", gsvgwidth + margin.left + margin.right)
+                                    .attr("height", height1 + margin.top + margin.bottom);
+
+                                gsvg.append("rect")
+                                    .attr("width", "100%")
+                                    .attr("height", "92.5%")
+                                    .attr("rx", 5)
+                                    .attr("fill", "white");
+                                    //.attr("transform", "translate(" + (0) + "," + margin.top + ")");
+
+                                var bsvg = d3.select("#choropleth")
+                                    .append("svg")
+                                    .attr("width", bsvgwidth + margin.left + margin.right)
+                                    .attr("height", height2 + margin.top + margin.bottom);
+
+                                bsvg.append("rect")
+                                    .attr("width", "100%")
+                                    .attr("height", "92.5%")
+                                    .attr("rx", 5)
+                                    .attr("fill", "white");
+
+
+
+                            </script>
+						</div>
+
+						<!-- <div class="6u$ 12u$(medium)">
+							<header class="major">
+								<h2><strong>Explore Barcelona</strong><br />
+								On the Map</h2>
+							</header>
+						</div>
+
                         <div class="row uniform 50%">
 
                             <div class="4u 12u$(small)">
@@ -89,41 +145,7 @@
                                 <input type="radio" id="demo-priority-highest" name="demo-priority">
                                 <label for="demo-priority-highest">6+</label>
                             </div>
-                        </div>
-                        </div>
-
-                        <div>
-                            <script>
-
-                                // set the dimensions and margins of the graph
-                                var margin = {top: 40, right: 40, bottom: 30, left: 40},
-                                    width = 1000 - margin.left - margin.right,
-                                    height = 700 - margin.top - margin.bottom;
-
-                                var svg = d3.select("choropleth")
-                                    .append("svg")
-                                    .attr("width", width + margin.left + margin.right)
-                                    .attr("height", height + margin.top + margin.bottom)
-                                    .append("g")
-                                      .attr("transform",
-                                            "translate(" + margin.left + "," + margin.top + ")");
-
-                                svg.append("rect")
-                                    .attr("width", "100%")
-                                    .attr("height", "100%")
-                                    .attr("fill", "#cfcfcf");
-
-                            </script>
-						</div>
-						<div class="6u$ 12u$(medium)">
-							<header class="major">
-								<h2><strong>Explore Barcelona</strong><br />
-								On the Map</h2>
-							</header>
-							<p>Adipiscing a commodo ante nunc accumsan interdum mi ante adipiscing. A nunc lobortis non nisl amet vis volutpat aclacus nascetur ac non. Lorem curae eu ante amet sapien in tempus ac. Adipiscing id accumsan adipiscing ipsum.</p>
-							<p>Blandit faucibus proin. Ac aliquam integer adipiscing enim non praesent vis commodo nunc phasellus cubilia ac risus accumsan. Accumsan blandit. Lobortis phasellus non lobortis dit varius mi varius accumsan lobortis. Blandit ante aliquam lacinia lorem lobortis semper morbi col faucibus vitae integer placerat accumsan orci eu mi odio tempus adipiscing adipiscing adipiscing curae consequat feugiat etiam dolore.</p>
-							<p>Adipiscing a commodo ante nunc accumsan interdum mi ante adipiscing. A nunc lobortis non nisl amet vis volutpat aclacus nascetur ac non. Lorem curae eu ante amet sapien in tempus ac. Adipiscing id accumsan adipiscing ipsum.</p>
-						</div>
+                        </div> -->
 					</div>
 				</div>
 			</section>
@@ -524,9 +546,6 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 			<script src="assets/js/util.js"></script>
 			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
 			<script src="assets/js/main.js"></script>
-
-            <!-- d3 source code! -->
-            <script src="//d3js.org/d3.v4.min.js"></script>
 
 	</body>
 </html>
