@@ -45,7 +45,7 @@
 					<div class="row 150%">
 						<div class="6u 12u$(medium)">
 							<header class="major">
-								<h2><strong>Airbnb Visualization</strong><br />
+								<h2><strong>Barcelona Visualization</strong><br />
 								Created using d3</h2>
 							</header>
 							<p>This information visualization allows users to explore average listing prices in specific neighborhoods as well as filter locations by room type, average rating, and number of occupants. The vis also allows hosts to observe which listings are similar to theirs in their area by filtering using the aforementioned characteristics.</p>
@@ -67,15 +67,30 @@
                             </header>
                         </div>
                     </div>
-                    <div class="svg-container-full">
+                    <!-- <div class="svg-container-left" id="choroplethDiv">
+                        <svg id="csvg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 600 700" class="svg-content-responsive">
+                            <rect width="100%" height="100%" rx="8" fill="white">
+                            </rect>
+                            <g id="cg"</g>
+                        </svg>
+                    </div>
+                    <div class="svg-container-right">
+                        <svg preserveAspectRatio="xMinYMin meet" viewBox="0 0 600 1231" class="svg-content-responsive">
+                            <rect width="100%" height="100%" rx="15" fill="white"></rect>
+                            <g transform="translate(50,20)">
+                                <h2>BARCELONA</h2>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="svg-container-full" id="bubble">
                         <svg preserveAspectRatio="xMinYMin meet" viewBox="0 0 500 400" class="svg-content-responsive">
                             <rect width="100%" height="100%" rx="5" fill="white">
                             </rect>
                         </svg>
-                    </div>
+                    </div> -->
 
                     <!-- The row 150% class lays out the vis's side by side with padding -->
-                    <div class="row 150%" id="visSpace">
+                    <!-- <div class="row 150%" id="visSpace"> -->
                         <!-- <div class="6u 12u$(medium)"> -->
 
             <!-- ********* Information Visualization goes here!!! *********  -->
@@ -126,7 +141,39 @@
 
 
 <!-- BEGIN CODE FOR d3 AIRBNB INFORMATION VISUALIZATIONS *************************************** -->
+<style>
 
+    /*For the bar graph vis*/
+    .rectangle {
+    	fill: steelblue;
+    }
+    .rectangle:hover {
+    	fill: orange;
+    }
+    .axis {
+      font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+    /*For the bubble vis*/
+    div.tooltip {
+        position: absolute;
+        text-align: center;
+        width: 60px;
+        height: 28px;
+        padding: 2px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 0px;
+        border-radius: 8px;
+        pointer-events: none;
+    }
+</style>
 <script type="text/javascript">
 
     //Compute the proper dimensions for the 3 visualization spaces
@@ -140,24 +187,26 @@
     //d3.select(window).on('resize.updatesvg', resizeAllsvgs);
 
     //Choropleth
-    var csvg = d3.select("div#d3Container")
-    .append("div")
-    .classed("svg-container-left", true)
-        .append("svg")
+    var cdiv = d3.select("div#d3Container")
+        .append("div")
+        .attr("id", "chor")
+        .classed("svg-container-left", true);
+    var csvg = cdiv.append("svg")
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "0 0 600 700")
+        .attr("id", "chor")
         .classed("svg-content-responsive", true);
-    csvg.append("rect")
+    var crect = csvg.append("rect")
         .attr("width", "100%")
         .attr("height", "100%")
         .attr("rx", 8)
         .attr("fill", "white");
 
     //Graph (bar graph)
-    var rightDiv = d3.select("div#d3Container")
+    var gdiv = d3.select("div#d3Container")
         .append("div")
         .classed("svg-container-right", true);
-    var gsvg = rightDiv.append("svg")
+    var gsvg = gdiv.append("svg")
         .attr("preserveAspectRatio", "xMinYMin meet")
         .attr("viewBox", "0 0 600 1231")
         .classed("svg-content-responsive", true);
@@ -167,147 +216,226 @@
         .attr("rx", 15)
         .attr("fill", "white");
     gg = gsvg.append("g").attr("transform", "translate(50,20)");
-    // gsvg.append("text")
-    //     .attr("x", 20)
-    //     .attr("y", 20)
-    //     .text("BARCELONA")
-    gg//.append("div")
-        //.classed("row 150%", true)
-        //.append("div")
-        //.classed("6u$ 12u$(medium)", true)
-        //.append("body")
-        //.classed("major", true)
-        .append("h2")
-        .text("BARCELONA");
-        //.style("color", "black");
-        //.text("BARCA");
-        //.attr("text", "Explore");
+    gg.append("h2").text("BARCELONA");
 
-        // <!-- <div class="6u$ 12u$(medium)">
-        //     <header class="major">
-        //         <h2><strong>Explore Barcelona</strong><br />
-        //         On the Map</h2>
-        //     </header>
-        // </div>
 
-    var bsvg = d3.select("div#d3Container")
+    var bdiv = d3.select("div#d3Container")
         .append("div")
-        .classed("svg-container-full", true)
-        .append("svg")
+        .classed("svg-container-full", true);
+    var bsvg = bdiv.append("svg")
         .attr("preserveAspectRatio", "xMinYMin meet")
-        .attr("viewBox", "0 0 500 400")
+        .attr("viewBox", "0 0 500 500")
         .classed("svg-content-responsive", true);
-    bsvg.append("rect")
+    var brect = bsvg.append("rect")
         .attr("width", "100%")
         .attr("height", "100%")
         .attr("rx", 5)
         .attr("fill", "white");
-    //Choropleth
-    // var csvg = d3.select("#visSpace")
-    //     .append("svg")
-    //     .attr("width", csvgwidth + margin.left + margin.right)
-    //     .attr("height", height1 + margin.top + margin.bottom)
-    //     .append("g");
 
 
-    //Graph (bar graph)
-    // var gsvg = d3.select("#visSpace")
-    //     .append("svg")
-    //     .attr("width", gsvgwidth + margin.left + margin.right)
-    //     .attr("height", height1 + margin.top + margin.bottom)
-    //     .append("g");
-    // gsvg.append("rect")
-    //     .attr("width", "100%")
-    //     .attr("height", "93%")
-    //     .attr("rx", 5)
-    //     .attr("fill", "white");
-        //.attr("transform", "translate(" + (0) + "," + margin.top + ")");
 
-    //Bubble chart
-    // var bsvg = d3.select("#visSpace")
-    //     .append("svg")
-    //     .attr("width", bsvgwidth + margin.left + margin.right)
-    //     .attr("height", height2 + margin.top + margin.bottom)
-    //     .append("g");
-    // bsvg.append("rect")
-    //     .attr("width", "100%")
-    //     .attr("height", "92.5%")
-    //     .attr("rx", 5)
-    //     .attr("fill", "white");
+    // g = csvg.append("g").attr("transform", "translate(50,20)")
+    //     .attr("height", height1 / 2);
+    // var parseTime = d3.timeParse("%Y"); //could also be %Y%m%d
+    //
+    // var x = d3.scaleTime().range([0, csvgwidth - 100]),
+    //     y = d3.scaleLinear().range([height1, 0]),
+    //     z = d3.scaleOrdinal(d3.schemeCategory10);
+    //
+    // var line = d3.line()
+    //     .x(function(d) { return x(d.year); })
+    //     .y(function(d) { return y(d.temperature); });
+    //
+    // d3.csv("data/Professors2.csv", type, function(error, data) {
+    //   if (error) throw error;
+    //
+    //   var cities = data.columns.slice(1).map(function(id) {
+    //     return {
+    //       id: id,
+    //       values: data.map(function(d) {
+    //         return {year: d.year, temperature: d[id]};
+    //       })
+    //     };
+    //   });
+    //
+    //   x.domain(d3.extent(data, function(d) { return d.year; }));
+    //
+    //   y.domain([
+    //     d3.min(cities, function(c) { return d3.min(c.values, function(d) { return d.temperature; }); }),
+    //     d3.max(cities, function(c) { return d3.max(c.values, function(d) { return d.temperature; }); })
+    //   ]);
+    //
+    //   z.domain(cities.map(function(c) { return c.id; }));
+    //
+    //   g.append("g")
+    //       .attr("class", "axis axis--x")
+    //       .attr("transform", "translate(20," + height1 / 1.3 + ")")
+    //       .call(d3.axisBottom(x));
+    //
+    //   g.append("g")
+    //       .attr("class", "axis axis--y")
+    //       .call(d3.axisLeft(y))
+    //     .append("text")
+    //       .attr("transform", "rotate(-90)")
+    //       .attr("transform", "translate(0,-50)")
+    //       .attr("y", 6)
+    //       .attr("dy", "0.71em")
+    //       .attr("fill", "#000")
+    //       .text("# of Professors");
+    //
+    //   var city = g.selectAll(".city")
+    //     .data(cities)
+    //     .enter().append("g")
+    //       .attr("class", "city");
+    //
+    //   city.append("path")
+    //       .attr("class", "line")
+    //       .attr("d", function(d) { return line(d.values); })
+    //       .style("stroke", function(d) { return z(d.id); });
+    //
+    //   city.append("text")
+    //       .datum(function(d) { return {id: d.id, value: d.values[d.values.length - 1]}; })
+    //       .attr("transform", function(d) { return "translate(" + x(d.value.year) + "," + y(d.value.temperature) + ")"; })
+    //       .attr("x", 3)
+    //       .attr("dy", "0.35em")
+    //       .style("font", "10px sans-serif")
+    //       .text(function(d) { return d.id; });
+    // });
+    //
+    // function type(d, _, columns) {
+    //   d.year = parseTime(d.year);
+    //   for (var i = 1, n = columns.length, c; i < n; ++i) d[c = columns[i]] = +d[c];
+    //   return d;
+    // }
 
 
-    g = csvg.append("g").attr("transform", "translate(50,20)")
-        .attr("height", height1 / 2);
-    var parseTime = d3.timeParse("%Y"); //could also be %Y%m%d
 
-    var x = d3.scaleTime().range([0, csvgwidth - 100]),
-        y = d3.scaleLinear().range([height1, 0]),
-        z = d3.scaleOrdinal(d3.schemeCategory10);
 
-    var line = d3.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.temperature); });
 
-    d3.csv("data/Professors2.csv", type, function(error, data) {
-      if (error) throw error;
 
-      var cities = data.columns.slice(1).map(function(id) {
-        return {
-          id: id,
-          values: data.map(function(d) {
-            return {year: d.year, temperature: d[id]};
-          })
-        };
-      });
 
-      x.domain(d3.extent(data, function(d) { return d.year; }));
 
-      y.domain([
-        d3.min(cities, function(c) { return d3.min(c.values, function(d) { return d.temperature; }); }),
-        d3.max(cities, function(c) { return d3.max(c.values, function(d) { return d.temperature; }); })
-      ]);
 
-      z.domain(cities.map(function(c) { return c.id; }));
 
-      g.append("g")
-          .attr("class", "axis axis--x")
-          .attr("transform", "translate(20," + height1 / 1.3 + ")")
-          .call(d3.axisBottom(x));
 
-      g.append("g")
-          .attr("class", "axis axis--y")
-          .call(d3.axisLeft(y))
-        .append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("transform", "translate(0,-50)")
-          .attr("y", 6)
-          .attr("dy", "0.71em")
-          .attr("fill", "#000")
-          .text("# of Professors");
 
-      var city = g.selectAll(".city")
-        .data(cities)
-        .enter().append("g")
-          .attr("class", "city");
 
-      city.append("path")
-          .attr("class", "line")
-          .attr("d", function(d) { return line(d.values); })
-          .style("stroke", function(d) { return z(d.id); });
 
-      city.append("text")
-          .datum(function(d) { return {id: d.id, value: d.values[d.values.length - 1]}; })
-          .attr("transform", function(d) { return "translate(" + x(d.value.year) + "," + y(d.value.temperature) + ")"; })
-          .attr("x", 3)
-          .attr("dy", "0.35em")
-          .style("font", "10px sans-serif")
-          .text(function(d) { return d.id; });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    d3.csv("data/listings.csv", function(error, data){
+        var toIgnore = ["apartment", "a", "at", "the", "to", "and", "of", "with", "near", "for", "in", "on", "el", "y", "de", "en", "con", "piso", "doble", "ramblas", "la"];
+
+        //create a dictionary of the unique word:count pairs
+        var dict = {};
+        var total = 0;
+        data.forEach(function(d) {
+            var s = d.name;
+            var split = s.split(" ");
+            for (var i = 0; i < split.length; i++) {
+                var word = split[i].toLowerCase();
+                if (toIgnore.indexOf(word) == -1) {
+                    if (word in dict ) {
+                        dict[word] = dict[word] + 1;
+                    } else if ((/^[a-zA-Z()]+$/.test(word))) {
+                        //if the word doesn't contain symbols
+                        dict[word] = 1;
+                    }
+                }
+            }
+            total++;
+        });
+
+        //filter and format data for bubble chart
+        var newData = [];
+        for (var x in dict) {
+            if (dict[x] > 250) {
+                newData.push({word: x, count: dict[x]});
+            }
+        }
+        tabulate(total, {children: newData});
     });
 
-    function type(d, _, columns) {
-      d.year = parseTime(d.year);
-      for (var i = 1, n = columns.length, c; i < n; ++i) d[c = columns[i]] = +d[c];
-      return d;
+    var tabulate = function(total, data) {
+        var diameter = parseInt(d3.select('div.svg-container-full').style('width'), 10) / 2.15;
+
+        var color = d3.scaleOrdinal(d3.schemeCategory20c); //color category
+
+        var bubble = d3.pack()
+            .size([diameter, diameter])
+            .padding(1.5);
+
+        bsvg //bubblesvg = bsvg.append("svg")
+        //bsvg//.attr("width", diameter)
+            //.attr("height", diameter)
+            //.attr("transform", "translate(0,100)")
+            .attr("class", "bubble");
+        // var svg = d3.select("body")
+        //     .append("svg")
+        //     .attr("width", diameter)
+        //     .attr("height", diameter)
+        //     .attr("class", "bubble");
+
+        // bdiv.attr("class", "tooltip")
+        //     .style("opacity", 0);
+        // var div = d3.select("body").append("div")
+        //     .attr("class", "tooltip")
+        //     .style("opacity", 0);
+
+        var root = d3.hierarchy(data)
+            .sum(function(d) { return d.count; })
+            .sort(function(a, b) {return b.count - a.count; });
+
+        //add g elements to svg for each entry
+        bubble(root);
+        var node = bsvg.selectAll(".node")
+            .data(root.children)
+            .enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+
+        //append bubble onto each g element
+        node.append("circle")
+            .attr("r", function(d){ return d.r; })
+            .style("fill", function(d) { return color(d.data.word); });
+
+        //add text to bubbles
+        node.append("text")
+            .attr("dy", ".3em")
+            .style("text-anchor", "middle")
+            .style("font-size", "8px")
+            .text(function(d) { return d.data.word; });
+
+        // bsvg.selectAll("circle")
+        //     .on("mouseover", function(d) {
+        //         bdiv.transition()
+        //             .duration(200)
+        //             .style("opacity", .9);
+        //         bdiv.html(Math.floor((d.data.count / total) * 100) + "% <br> of listings")
+        //             .style("left", d.x + "px")
+        //             .style("top", d.y - d.r + "px");
+        //         })
+        //     .on("mouseout", function(d) {
+        //         bdiv.transition()
+        //             .duration(500)
+        //             .style("opacity", 0);
+        //     });
     }
 
 
@@ -316,6 +444,286 @@
 <!-- END CODE FOR d3 AIRBNB INFORMATION VISUALIZATIONS ***************************************** -->
 
 
+
+
+
+
+
+
+
+<style type="text/css">
+
+/* Legend Font Style */
+/*body {
+	font: 11px sans-serif;
+	background-color: #ffffff;
+}*/
+
+/* Legend Position Style */
+.legend {
+	position:absolute;
+	left:20px;
+	top:30px;
+}
+
+.axis text {
+	font: 10px sans-serif;
+    fill: black
+}
+
+.axis line, .axis path {
+	fill: black;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+
+/*div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 150px;
+  height: 25px;
+  padding: 2px;
+  font-size: 10px;
+  background: lightsteelblue;
+  border: 1px;
+  border-radius: 8px;
+  pointer-events: none;
+}*/
+</style>
+
+<!-- load the d3.js library -->
+<script type="text/javascript">
+
+  var svg = d3.select("svg#chor");
+  console.log("CALLED");
+  console.log(chor);
+  console.log("ENDED");
+  var div = d3.select("div#chor")
+
+
+
+    // .attr("class", "tooltip")
+    // .style("opacity", 0);
+
+
+
+
+  var width = parseInt(div.style('width'), 10) / 3;
+  var height = parseInt(div.style('height'), 10);
+  console.log("Width: " + width);
+
+  //Width and height of map
+  //var width = 960;
+  //var height = 650;
+
+  var lowColor = '#f2f3f4'
+  var highColor = '#3182bd'
+
+  // D3 Projection
+  var projection = d3.geoMercator()
+    .center([29.6, 30.47])
+    .translate([width / 0.75, height / 3]) // translate to center of screen
+    //.scale([230000])
+    .scale([200000])
+    .rotate([0, 0, -37.6]); // scale things down to see entire US
+
+  // Define path generator
+  var path = d3.geoPath() // path generator that will convert GeoJSON to SVG paths
+    .projection(projection); // tell path generator to use albersUsa projection
+
+  //Create SVG element and append map to the SVG
+  // var svg = d3.select("body")
+  //   .append("svg")
+  //   .attr("width", width)
+  //   .attr("height", height);
+
+
+  // Load in my states data
+  d3.csv("data/listings.csv", function(data) {
+	var neighbourhoodAvg = d3.nest()
+		.key(function(d) { return d.neighbourhood_cleansed; })
+		.rollup(function(v) { return d3.mean(v, function(d) {return d.price; }); })
+		.entries(data); //not sure what the variable needs to be here
+    var dataArray = [];
+    for (var d = 0; d < neighbourhoodAvg.length; d++) {
+      dataArray.push(parseFloat(neighbourhoodAvg[d].value))
+    }
+
+    var minVal = d3.min(dataArray);
+    var maxVal = d3.max(dataArray);
+    var ramp = d3.scaleLinear().domain([minVal,maxVal]).range([lowColor,highColor])
+
+    // Load GeoJSON data and merge with states data
+    d3.json("data/neighbourhoods.geojson", function(json) {
+      // Loop through each state data value in the .csv file
+      for (var i = 0; i < neighbourhoodAvg.length; i++) {
+
+        // Grab State Name
+        var dataNeighbourhood = neighbourhoodAvg[i].key;
+
+        // Grab data value
+        var dataValue = neighbourhoodAvg[i].value;
+
+        // Find the corresponding state inside the GeoJSON
+        for (var j = 0; j < json.features.length; j++) {
+          var jsonNeighbourhood = json.features[j].properties.neighbourhoodAvg;
+          if (dataNeighbourhood == jsonNeighbourhood) {
+
+            // Copy the data value into the JSON
+            json.features[j].properties.value = dataValue;
+
+            // Stop looking through the JSON
+            break;
+          }
+        }
+      }
+
+    // Bind the data to the SVG and create one path per GeoJSON feature
+    svg.selectAll("path")
+      .data(json.features)
+      .enter()
+      .append("path")
+      .attr("d", path)
+      .style("stroke", "#fff")
+      .style("stroke-width", "1")
+      .style("fill", fillFn)
+			//Adding mouseevents
+			// .on("mouseover", function(d) {
+			// 	d3.select(this).transition().duration(300).style("opacity", 1)
+			// 	div.transition().duration(300)
+			// 	.style("opacity", 1)
+			// 	div.text(d.properties.neighbourhood)
+			// 	.style("left", (d3.event.pageX) + "px")
+			// 	.style("top", (d3.event.pageY -30) + "px");
+			// })
+			// .on("mouseout", function() {
+			// 	d3.select(this)
+			// 	.transition().duration(300)
+			// 	.style("opacity", 0.8);
+			// 	div.transition().duration(300)
+			// 	.style("opacity", 0);
+			// });
+
+		function fillFn (d) {
+			var name = d.properties.neighbourhood;
+			for (var x = 0; x < neighbourhoodAvg.length; x++) {
+				if (neighbourhoodAvg[x].key == name) {
+
+					return ramp(neighbourhoodAvg[x].value);
+				}
+			}
+		}
+
+
+
+    // add a legend
+    var w = (width / 10), h = (height / 3);
+
+    // var key = d3.select("body")
+    //   .append("svg")
+    //   .attr("width", w)
+    //   .attr("height", h)
+    //   .attr("class", "legend");
+
+//THIS SHOULD BE AN SVG CONTAINER, NOT JUST AN SVG
+    var key = div
+        .append("svg")
+        .attr("width", w)
+        .attr("height", h)
+        .attr("class", "legend");
+
+    var legend = key.append("defs")
+      .append("svg:linearGradient")
+      .attr("id", "gradient")
+      .attr("x1", "100%")
+      .attr("y1", "0%")
+      .attr("x2", "100%")
+      .attr("y2", "100%")
+      .attr("spreadMethod", "pad");
+
+    legend.append("stop")
+      .attr("offset", "0%")
+      .attr("stop-color", highColor)
+      .attr("stop-opacity", 1);
+
+    legend.append("stop")
+      .attr("offset", "100%")
+      .attr("stop-color", lowColor)
+      .attr("stop-opacity", 1);
+
+    key.append("rect")
+      .attr("width", (width / 7.5))
+      .attr("height", h)
+      .style("fill", "url(#gradient)")
+      .attr("transform", "translate(0,10)");
+
+    var y = d3.scaleLinear()
+      .range([h, 0])
+      .domain([minVal, maxVal]);
+
+    var yAxis = d3.axisRight(y);
+
+    key.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(41,10)")
+      .call(yAxis)
+
+    d3.selectAll("path")
+          .attr("stroke", "darkGrey");
+    d3.selectAll("text")
+        .attr("fill", "black");
+
+
+    /*svg.append("text")
+        .attr("x", (width / 2))
+        .attr("y", 40)
+        .attr("text-anchor", "middle")
+        .style("font-size", "20px")
+        .style("text-decoration", "underline")
+        .text("Price of Listings per neighbourhood");*/
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
 
 
 <!-- *** -->
