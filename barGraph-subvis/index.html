@@ -236,12 +236,7 @@ var presentGraph = function(neighborhood, rating) {
 
             console.log("------------------------------------------------------------------------------");
             ratingSelected = parseInt(document.getElementById("dropdown").value);
-            //console.log("Parsed:" + ratingSelected)
-            svg.selectAll(".rectangle")
-                .data(prices)
-                .exit()
-                .remove();
-            //(svg.selectAll(".rectangle")).forEach(function(d) { console.log("RD: " + d);});
+
             prices = computePrices(neighborhoodSelected, ratingSelected);
         	y.domain([0, d3.max(prices, function(d){ return +d;})]);
 
@@ -281,7 +276,7 @@ var presentGraph = function(neighborhood, rating) {
                 .text(function(d, i) { return "$" + parseInt(prices[i]) })
                 .ease(d3.easeLinear);
 
-         });
+        });
 
     selector.selectAll("option")
       .data(elements)
