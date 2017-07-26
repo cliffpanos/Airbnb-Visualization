@@ -150,14 +150,19 @@
     /*.rectangle:hover {
     	fill: orange;
     }*/
-    .axis {
-      font: 10px sans-serif;
+    .axis text {
+        font: 18px helvetica;
+    }
+
+    .tick text {
+        font: 22px helvetica;
     }
 
     .axis path,
     .axis line {
       fill: none;
       stroke: #000;
+      stroke-width: 0.7;
       shape-rendering: crispEdges;
     }
     /*For the bubble vis*/
@@ -354,8 +359,8 @@
             var split = s.split(" ");
             for (var i = 0; i < split.length; i++) {
                 var word = split[i].toLowerCase();
-                if (toIgnore.indexOf(word) == -1) {
-                    if (word in dict ) {
+                if (toIgnore.indexOf(word) == -1) {     //If the word is NOT in toIgnore
+                    if (word in dict) {
                         dict[word] = dict[word] + 1;
                     } else if ((/^[a-zA-Z()]+$/.test(word))) {
                         //if the word doesn't contain symbols
@@ -382,13 +387,14 @@
         var color = d3.scaleOrdinal(d3.schemeCategory20c); //color category
 
         var bubble = d3.pack()
-            .size([diameter, diameter * 0.98])
+            .size([diameter, diameter])
             .padding(1.5);
+
 
         bsvg //bubblesvg = bsvg.append("svg")
         //.attr("width", diameter)
         //.attr("height", diameter)
-            //.attr("transform", "translate(0,100)")
+            .style("transform", "translate(0,50)")
             .attr("class", "bubble");
         // var svg = d3.select("body")
         //     .append("svg")
@@ -431,12 +437,12 @@
             .text(function(d) { return d.data.word; });
 
 
-
-        bsvg.append("text")
-            .attr("x", width /2)//(width / 2))
-            .attr("y", 25)
+        bsvg.append("g")
+            .append("text")
+            .attr("id", "keywordTitle")
+            .style("transform", "translate(17px,25px)")
             .attr("text-anchor", "right")
-            .style("font-size", (width / 72) + "px")
+            .style("font-size", (width / 30) + "px")
             .style("font-weight", "bold")
             .text("Popular Listing Keywords");
 
@@ -460,11 +466,6 @@
             });
 
     }
-
-    var logger = function() {
-        console.log("FUNCTION CALLED -------------------------");
-    }
-
 
 </script>
 
@@ -551,7 +552,7 @@ div.tooltip {
   // D3 Projection
   var projection = d3.geoMercator()
     .center([29.6, 30.47])
-    .translate([width / 2.35, (height / 3)])
+    .translate([width / 2.35, (height / 3 + 15)])
     //.translate([width / 1.63, height / 2]) // translate to center of screen
     //.scale([230000])
     .scale([200000])
@@ -736,12 +737,14 @@ var key = csvg
           .attr("stroke", "darkGrey");
 
 
-    csvg.append("text")
-        .attr("id", "chor")
-        .attr("x", (width / 3.15))
-        .attr("y", (height / 25))
-        //.//attr("text-anchor", "middle")
-        .style("font-size", (width / 36) + "px")
+    csvg.append("g")
+        .append("text")
+        .attr("id", "chorTitle")
+        .attr("x", width * 0.60)
+        .attr("y", (height / 16))
+        //.attr("text-align", "left")
+        .attr("text-anchor", "right")
+        .style("font-size", (width / 16) + "px")
         .style("font-weight", "bold")
         .text("Average Listing Price by Neighborhood");
     });
@@ -791,7 +794,7 @@ g.append("text")
     //.//attr("text-anchor", "middle")
     .style("font-size", (width / 9) + "px")
     .style("font-weight", "bold")
-    .text("Price by Room");
+    .text("Price by Room Type");
 
 var tooltipDiv = div.append("div")
     .attr("class", "tooltip")
@@ -800,8 +803,8 @@ var tooltipDiv = div.append("div")
 
 div.append("div")
     .attr("id", "drop")
-    .attr("align", "center")
-    .style("transform", "translateY(" + (height - 5) + "px)");// + height - 50 + ")");
+    //.attr("align", "center")
+    .style("transform", "translateY(" + (height - 1) + "px)");// + height - 50 + ")");
     //.style("top", (300) + "px");
 
 
@@ -879,13 +882,13 @@ d3.csv("data/listings.csv", function(error, data) {
 
     var xAxis = g.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .attr("font-size", "30")
+        //.attr("font-size", "30")
         .call(d3.axisBottom(x))
         .selectAll("text")
         //.attr("font-size", width / 55)
         //.attr("dy", 15)
         .attr("y", 0)
-        .attr("x", -70)
+        .attr("x", -85)
         .attr("dy", ".35em")
         .attr("transform", "rotate(-90)")
         .attr("fill", "#353F39")
@@ -949,7 +952,10 @@ d3.csv("data/listings.csv", function(error, data) {
             //   .style("top", d.y + "px");
               var coordinates = d3.mouse(this);
               console.log(coordinates[0] + ", " + coordinates[1]);
-              tooltipDiv.text(roomCounts[i] + " Rooms")    //Add tooltip
+              tooltipDiv.text(function(d) {
+                  var rc = roomCounts[i];
+                  return rc + " Room" + (rc == 1 ? "" : "s");    //Add tooltip
+              })
               .style("left", (coordinates[0] * 0.75) + "px") //coordinates[0] + "px") //(d3.event.pageX) + "px")
               .style("top", (coordinates[1] * 0.75) + "px"); //(d3.event.pageY / 3) - 30 + "px");
 
@@ -997,10 +1003,17 @@ d3.csv("data/listings.csv", function(error, data) {
 
     var selector = d3.select("#drop")
         .append("select")
+        .attr("margin", "20")
         .attr("id","dropdown")
-        .on("change", function(d){
+        .on("change", function(d) {
               ratingSelected = parseInt(document.getElementById("dropdown").value);
               console.log("RATING CHANGED      -   - - - - - " + ratingSelected);
+              d3.select("text#ratingTitle")
+                .text(function() {
+                if (ratingSelected == 5) { return "Rating: 5 Stars"; }
+                return "Rating: " + ratingSelected + " Or More Stars";
+            })
+                //.style("transform", "translate(150px,0" + (height - 5) + "px)");// + height - 50 + ")");
               presentGraph(neighborhoodSelected);
          });
     selector.selectAll("option")
@@ -1017,11 +1030,11 @@ d3.csv("data/listings.csv", function(error, data) {
 g.append("text")
     .attr("id", "ratingTitle")
     //.style("transform", "translateX(-50px)") // + height - 50 + ")");
-    .style("transform", "translate(70px," + (height * 1.45) + "px)")// + height - 50 + ")");
-    .attr("text-anchor", "middle")
+    .attr("text-anchor", "left")
+    .style("transform", "translate(0px," + (height * 1.41) + "px)")// + height - 50 + ")");
     .style("font-size", (width / 9) + "px")
     .style("font-weight", "bold")
-    .text("Rating");
+    .text("Rating: 1 Or More Stars");
 
 
 var presentGraph = function(neighborhood) {
@@ -1088,7 +1101,8 @@ var presentGraph = function(neighborhood) {
             var pr = parseInt(prices[i]);
             var subtraction = 0;
             if (pr > 9) { subtraction = 7; }
-            if (pr > 100) { subtraction = 12.5 }
+            if (pr > 99) { subtraction = 12.5 }
+            if (pr > 999) { subtraction = 18 }
             if (pr == 0) { subtraction = -7.5; }
             return xPos(i) + (width / 9) - 12.5 - subtraction;
         })
