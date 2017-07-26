@@ -12,13 +12,19 @@ Filter by:
 <style>
 
 .rectangle {
-	fill: #9EC28F;
+	/*fill: #83B39D;*/
+    /*fill: #9EC28F;*/
+    fill: green
 }
-.rectangle:hover {
-	fill: #83B39D;
+/*.rectangle:hover {
+	fill: green;
+}*/
+.label {
+  font: 15px helvetica;
 }
-.axis {
-  font: 10px sans-serif;
+
+.axis text {
+    font: 18px helvetica;
 }
 
 .path {
@@ -30,16 +36,33 @@ Filter by:
   stroke: #000;
   shape-rendering: crispEdges;
 }
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 150px;
+  height: 25px;
+  padding: 2px;
+  font-size: 10px;
+  background: lightsteelblue;
+  border: 1px;
+  border-radius: 8px;
+  pointer-events: none;
+}
 </style>
 </head>
 <body>
-<div id="drop" align=center></div>
+<!-- <div id="drop" align=center></div> -->
 <script src="../assets/js/d3.min.js"></script>
 <script>
 
-var margin = {top: 80, right: 0, bottom: 80, left: 180},
-    width = 700 - margin.left - margin.right,
-    height = 700 - margin.top - margin.bottom;
+var margin = {top: 80, right: 0, bottom: 200, left: 180},
+    width = 450 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
+
+var drop = d3.select("body")
+    .append("div")
+    .attr("id", "drop")
+    .attr("align", "center");
 
 var svg = d3.select("body").append("svg")
 	.attr("width", width + margin.left + margin.right)
@@ -47,14 +70,23 @@ var svg = d3.select("body").append("svg")
 	.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+var tooltipDiv = d3.select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+
 var neighborhoodSelected = "el Poble Sec";
 var ratingSelected = 1;
 
 var presentGraph = function(neighborhood, rating) {
     console.log(neighborhood);
 
-    d3.csv("data/listings.csv", function(error, data){
-    console.log(data.length);
+    d3.csv("../data/listings.csv", function(error, data){
+    console.log("Data length: " + data.length);
+
+    var roomCounts = [];
+    var MAX;
 
     var computePrices = function(neighborhood, rating) {
 
@@ -62,26 +94,30 @@ var presentGraph = function(neighborhood, rating) {
         filtered = data.filter(function(d){
             return d.neighbourhood_cleansed == neighborhood && (d.review_scores_rating / 20) >= rating;
         });
+        //MAX = d3.max(filtered, function(d) { return parseInt(d.price.replace(/\$/g, '')); });
+        //console.log("ALL MAX IS: " + MAX);
         console.log("FILTERED LENGTH: " + filtered.length);
         var privateRooms = filtered.filter(function(d) { return d.room_type == "Private room"; });
-        console.log("Private rooms: " + privateRooms.length);
+        //console.log("Private rooms: " + privateRooms.length);
         var privatePrice = d3.mean(privateRooms, function(d) { return parseInt(d.price.replace(/\$/g, '')); });
         console.log("Private Price: " + privatePrice);
 
         var sharedRooms = filtered.filter(function(d) { return d.room_type == "Shared room"; });
-        console.log("Shared: " + sharedRooms.length);
+        //console.log("Shared: " + sharedRooms.length);
         var sharedPrice = d3.mean(sharedRooms, function(d) { return parseInt(d.price.replace(/\$/g, '')); });
         console.log("Shared Price: " + sharedPrice);
 
         var fullHouse = filtered.filter(function(d) { return d.room_type == "Entire home/apt"; });
-        console.log("Entire home: " + fullHouse.length);
+        //console.log("Entire home: " + fullHouse.length);
         var fullPrice = d3.mean(fullHouse, function(d) { return parseInt(d.price.replace(/\$/g, '')); });
         console.log("Full Price: " + fullPrice);
 
+        roomCounts = [privateRooms.length, sharedRooms.length, fullHouse.length];
         return [privatePrice, sharedPrice, fullPrice];
     }
 
     var priceNames = ["Private Room", "Shared Room", "Entire House"];
+
     var prices = computePrices(neighborhoodSelected, ratingSelected);
 
 	var elements = [1, 2, 3, 4, 5];
@@ -90,6 +126,7 @@ var presentGraph = function(neighborhood, rating) {
 			.domain([0, d3.max(prices, function(d){
 				return +d;
 			})])
+            //.domain([0, MAX])
 			.range([height, 0]);
 
 	var x = d3.scaleBand()
@@ -102,13 +139,18 @@ var presentGraph = function(neighborhood, rating) {
         .call(d3.axisBottom(x));
 
     d3.selectAll("text")
-        .attr("font-size", width / 55)
-        .attr("dy", 15)
-        .attr("y", 15)
-        .attr("fill", "#353F39");
+        //.attr("font-size", width / 55)
+        //.attr("dy", 15)
+        .attr("y", 0)
+        .attr("x", -70)
+        .attr("dy", ".35em")
+        .attr("transform", "rotate(-90)")
+        .attr("fill", "#353F39")
+        .attr("font-size", "18")
+        .style("text-anchor", "finish");
 
     d3.selectAll("path")
-        .attr("stroke", "darkGrey");
+        .attr("stroke", "white");
 
 
 	// var yAxis = svg.append("g")
@@ -136,6 +178,7 @@ var presentGraph = function(neighborhood, rating) {
 		.enter()
 		.append("rect")
 		.attr("class","rectangle")
+        .attr("rx", 5)
 		.attr("width", width/ (1.5 * prices.length))
         //.attr("rx", "5, 5, 0, 0")
 		.attr("height", function(d){
@@ -146,7 +189,27 @@ var presentGraph = function(neighborhood, rating) {
 		})
 		.attr("y", function(d){
 			return y(+d);
-		});
+		})
+        .style("opacity", 0.7)
+        //Adding mouseevents
+        .on("mouseover", function(d, i) {
+              d3.select(this).transition().duration(250).style("opacity", 1)
+              tooltipDiv.transition().duration(250)
+              .style("opacity", 1);
+              var coordinates = d3.mouse(this);
+              console.log(coordinates[0] + ", " + coordinates[1]);
+              tooltipDiv.text(roomCounts[i] + " Rooms")     //Add tooltip
+              .style("left", coordinates[0] + 100 + "px") //(d3.event.pageX) + "px")
+              .style("top", coordinates[1] + "px") //(d3.event.pageY / 3) - 30 + "px");
+
+        })
+        .on("mouseout", function() {
+              d3.select(this)
+              .transition().duration(250)
+              .style("opacity", 0.7);
+              tooltipDiv.transition().duration(250)
+              .style("opacity", 0);
+          });
 		// .append("title")
 		// .text(function(d, i){
 		// 	return priceNames[i];
@@ -171,11 +234,14 @@ var presentGraph = function(neighborhood, rating) {
     	.attr("id","dropdown")
     	.on("change", function(d){
 
+            console.log("------------------------------------------------------------------------------");
             ratingSelected = parseInt(document.getElementById("dropdown").value);
-            console.log("Parsed:" + ratingSelected)
+            //console.log("Parsed:" + ratingSelected)
             svg.selectAll(".rectangle")
                 .data(prices)
-                .exit();
+                .exit()
+                .remove();
+            //(svg.selectAll(".rectangle")).forEach(function(d) { console.log("RD: " + d);});
             prices = computePrices(neighborhoodSelected, ratingSelected);
         	y.domain([0, d3.max(prices, function(d){ return +d;})]);
 
@@ -186,25 +252,32 @@ var presentGraph = function(neighborhood, rating) {
 
         	//d3.selectAll(".rectangle")
             svg.selectAll(".rectangle")
-                .data(prices)
-                .enter()
+                //.data(prices)
+                //.enter()
            		.transition()
-        		.attr("height", function(d){
-        			return height - y(+d);
+        		.attr("height", function(d, i){
+                    var pr = prices[i];
+        			return height - y(+pr);
         		})
         		.attr("x", function(d, i){
         			return (width / prices.length) * i + (0.16 * width / prices.length);
         		})
-        		.attr("y", function(d){
-                    console.log("d is: " + d);
-                    console.log("New y:" + y(+d));
-        			return y(+d);
+        		.attr("y", function(d, i){
+                    var pr = prices[i];
+                    console.log("d" + i + " is: " + pr);
+                    console.log("New y:" + (height - y(+pr)));
+                    console.log("Height:" + height);
+                    console.log("y + pr: " + y(+pr));
+        			return y(+pr);
         		})
            		.ease(d3.easeLinear);
 
             svg.selectAll(".label")
                 .transition()
-                .attr("y", function(d) { return y(+d) + 15; })
+                .attr("y", function(d, i) {
+                    var pr = prices[i];
+                    return y(+pr) + 15;
+                })
                 .text(function(d, i) { return "$" + parseInt(prices[i]) })
                 .ease(d3.easeLinear);
 

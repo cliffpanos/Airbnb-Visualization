@@ -63,7 +63,7 @@
                     <div class="row 150%" id="visSpace">
                         <div class="6u$ 12u$(medium)">
                             <header class="major">
-                                <h2><strong>Explore Barcelona</strong> On The Map</h2>
+                                <h2><strong>Explore Barcelona Listings</strong></h2>
                             </header>
                         </div>
                     </div>
@@ -161,7 +161,7 @@
       shape-rendering: crispEdges;
     }
     /*For the bubble vis*/
-    div.tooltip {
+    /*div.tooltip {
         position: absolute;
         text-align: center;
         width: 60px;
@@ -172,7 +172,8 @@
         border: 0px;
         border-radius: 8px;
         pointer-events: none;
-    }
+    }*/
+
 </style>
 <script type="text/javascript">
 
@@ -337,7 +338,7 @@
 
 
     d3.csv("data/listings.csv", function(error, data){
-        var toIgnore = ["apartment", "a", "at", "the", "to", "and", "of", "with", "near", "for", "in", "on", "el", "y", "de", "en", "con", "piso", "doble", "ramblas", "la"];
+        var toIgnore = ["apartment", "a", "at", "the", "to", "and", "of", "with", "near", "for", "in", "on", "el", "y", "de", "en", "con", "piso", "doble", "ramblas", "la", "room", "habitacion"];
 
         //create a dictionary of the unique word:count pairs
         var dict = {};
@@ -370,17 +371,17 @@
     });
 
     var tabulate = function(total, data) {
-        var diameter = parseInt(d3.select('div.svg-container-full').style('width'), 10) / 2.15;
+        var diameter = parseInt(d3.select('div.svg-container-full').style('width'), 10) / 2.2;
 
         var color = d3.scaleOrdinal(d3.schemeCategory20c); //color category
 
         var bubble = d3.pack()
-            .size([diameter, diameter])
+            .size([diameter, diameter * 0.98])
             .padding(1.5);
 
         bsvg //bubblesvg = bsvg.append("svg")
-        //bsvg//.attr("width", diameter)
-            //.attr("height", diameter)
+        //.attr("width", diameter)
+        //.attr("height", diameter)
             //.attr("transform", "translate(0,100)")
             .attr("class", "bubble");
         // var svg = d3.select("body")
@@ -389,8 +390,9 @@
         //     .attr("height", diameter)
         //     .attr("class", "bubble");
 
-        // bdiv.attr("class", "tooltip")
-        //     .style("opacity", 0);
+        var tooltipDiv = bdiv.append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
         // var div = d3.select("body").append("div")
         //     .attr("class", "tooltip")
         //     .style("opacity", 0);
@@ -422,20 +424,39 @@
             .style("font-size", "8px")
             .text(function(d) { return d.data.word; });
 
-        // bsvg.selectAll("circle")
-        //     .on("mouseover", function(d) {
-        //         bdiv.transition()
-        //             .duration(200)
-        //             .style("opacity", .9);
-        //         bdiv.html(Math.floor((d.data.count / total) * 100) + "% <br> of listings")
-        //             .style("left", d.x + "px")
-        //             .style("top", d.y - d.r + "px");
-        //         })
-        //     .on("mouseout", function(d) {
-        //         bdiv.transition()
-        //             .duration(500)
-        //             .style("opacity", 0);
-        //     });
+
+
+        bsvg.append("text")
+            .attr("x", width /2)//(width / 2))
+            .attr("y", 25)
+            .attr("text-anchor", "right")
+            .style("font-size", (width / 72) + "px")
+            .style("font-weight", "bold")
+            .text("Popular Listing Keywords");
+
+        bsvg.selectAll("circle")
+            .on("mouseover", function(d) {
+                tooltipDiv.transition()
+                    .duration(200)
+                    .style("opacity", 1);
+                var width = parseInt(bdiv.style('width'), 10);
+                var height = parseInt(bdiv.style('height'), 10);
+                tooltipDiv.html(Math.floor((d.data.count / total) * 100) + "% of listings")
+                    //.style("left", coordinates[0] + "px")
+                    //.style("top", coordinates[1] + "px");
+                    .style("left", (d.x * width / 500) + "px")
+                    .style("top", (d.y * height2 / 650) + "px"); //- (d.r / 2) + "px");
+            })
+            .on("mouseout", function(d) {
+                tooltipDiv.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });
+
+    }
+
+    var logger = function() {
+        console.log("FUNCTION CALLED -------------------------");
     }
 
 
@@ -467,54 +488,48 @@
 }
 
 .axis text {
-	font: 10px sans-serif;
-    fill: black
+	font: 12px helvetica;
+    fill: black;
 }
 
 .axis line, .axis path {
-	fill: black;
+	fill: none;
 	stroke: #000;
 	shape-rendering: crispEdges;
 }
 
-/*div.tooltip {
+div.tooltip {
   position: absolute;
   text-align: center;
   width: 150px;
-  height: 25px;
+  height: 34px;
   padding: 2px;
-  font-size: 10px;
+  font-size: 14px;
   background: lightsteelblue;
   border: 1px;
   border-radius: 8px;
   pointer-events: none;
-}*/
+}
 </style>
 
-<!-- load the d3.js library -->
 <script type="text/javascript">
 
   var svg = d3.select("svg#chor");
-  console.log("CALLED");
-  console.log(chor);
-  console.log("ENDED");
   var div = d3.select("div#chor")
 
+  logger();
+  var tooltipDiv = div.append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
 
-    // .attr("class", "tooltip")
-    // .style("opacity", 0);
 
 
-
-
-  var width = parseInt(div.style('width'), 10) / 3;
+  var width = parseInt(div.style('width'), 10);
   var height = parseInt(div.style('height'), 10);
   console.log("Width: " + width);
+  console.log("Height: " + height);
 
-  //Width and height of map
-  //var width = 960;
-  //var height = 650;
 
   var lowColor = '#f2f3f4'
   var highColor = '#3182bd'
@@ -522,9 +537,11 @@
   // D3 Projection
   var projection = d3.geoMercator()
     .center([29.6, 30.47])
-    .translate([width / 0.75, height / 3]) // translate to center of screen
+    .translate([width / 2.35, (height / 3)])
+    //.translate([width / 1.63, height / 2]) // translate to center of screen
     //.scale([230000])
     .scale([200000])
+    .precision(0.1)
     .rotate([0, 0, -37.6]); // scale things down to see entire US
 
   // Define path generator
@@ -578,6 +595,8 @@
         }
       }
 
+    var lastSelected;   //Used to reset a path once its color has been changed
+
     // Bind the data to the SVG and create one path per GeoJSON feature
     svg.selectAll("path")
       .data(json.features)
@@ -588,21 +607,34 @@
       .style("stroke-width", "1")
       .style("fill", fillFn)
 			//Adding mouseevents
-			// .on("mouseover", function(d) {
-			// 	d3.select(this).transition().duration(300).style("opacity", 1)
-			// 	div.transition().duration(300)
-			// 	.style("opacity", 1)
-			// 	div.text(d.properties.neighbourhood)
-			// 	.style("left", (d3.event.pageX) + "px")
-			// 	.style("top", (d3.event.pageY -30) + "px");
-			// })
-			// .on("mouseout", function() {
-			// 	d3.select(this)
-			// 	.transition().duration(300)
-			// 	.style("opacity", 0.8);
-			// 	div.transition().duration(300)
-			// 	.style("opacity", 0);
-			// });
+			.on("mouseover", function(d) {
+				d3.select(this).transition().duration(250).style("opacity", 1)
+				tooltipDiv.transition().duration(250)
+				.style("opacity", 1);
+                var coordinates = d3.mouse(this);
+				tooltipDiv.text(d.properties.neighbourhood)     //Add tooltip
+				.style("left", coordinates[0] + "px") //(d3.event.pageX) + "px")
+				.style("top", coordinates[1] + "px") //(d3.event.pageY / 3) - 30 + "px");
+
+			})
+			.on("mouseout", function() {
+				d3.select(this)
+				.transition().duration(250)
+				.style("opacity", 0.8);
+				tooltipDiv.transition().duration(250)
+				.style("opacity", 0);
+			})
+            .on("click", function(d) {
+                if (lastSelected != null) {
+                    lastSelected.style("fill", fillFn);
+                }
+                lastSelected = d3.select(this);
+                lastColor = fillFn(d);
+                d3.select(this)
+				.transition().duration(250)
+				.style("fill", "orange");
+                console.log("Clicked! " + d.properties.neighbourhood);
+            });
 
 		function fillFn (d) {
 			var name = d.properties.neighbourhood;
@@ -617,7 +649,7 @@
 
 
     // add a legend
-    var w = (width / 10), h = (height / 3);
+    var w = (width / 17.5), h = (height / 3.5);
 
     // var key = d3.select("body")
     //   .append("svg")
@@ -626,10 +658,21 @@
     //   .attr("class", "legend");
 
 //THIS SHOULD BE AN SVG CONTAINER, NOT JUST AN SVG
-    var key = div
+// var keysvg = div
+//     .append("svg")
+//     .attr("width", w + 50)
+//     .attr("height", h + 50)
+//     .attr("preserveAspectRatio", "xMinYMin meet")
+//     .attr("viewBox", "0 0 " + (w + 50) + " " + (h + 50))//84 333)
+//     .classed("svg-content-responsive", true);
+
+var key = svg
         .append("svg")
-        .attr("width", w)
-        .attr("height", h)
+        .attr("id", "legendRect")
+        .attr("width", w + 50)
+        .attr("height", h + 50)
+        //.attr("preserveAspectRatio", "xMinYMin meet")
+        //.attr("viewBox", "0 0 " + (w + 50) + " " + (h + 50))//84 333)
         .attr("class", "legend");
 
     var legend = key.append("defs")
@@ -652,10 +695,10 @@
       .attr("stop-opacity", 1);
 
     key.append("rect")
-      .attr("width", (width / 7.5))
+      .attr("width", w)
       .attr("height", h)
       .style("fill", "url(#gradient)")
-      .attr("transform", "translate(0,10)");
+      .attr("transform", "translate(20,20)");
 
     var y = d3.scaleLinear()
       .range([h, 0])
@@ -665,22 +708,20 @@
 
     key.append("g")
       .attr("class", "y axis")
-      .attr("transform", "translate(41,10)")
+      .attr("transform", "translate(" + (20 + (width / 17.5)) + ",20)")
       .call(yAxis)
 
     d3.selectAll("path")
           .attr("stroke", "darkGrey");
-    d3.selectAll("text")
-        .attr("fill", "black");
 
 
-    /*svg.append("text")
-        .attr("x", (width / 2))
-        .attr("y", 40)
-        .attr("text-anchor", "middle")
-        .style("font-size", "20px")
-        .style("text-decoration", "underline")
-        .text("Price of Listings per neighbourhood");*/
+    svg.append("text")
+        .attr("x", (width / 3.15))
+        .attr("y", (height / 25))
+        //.//attr("text-anchor", "middle")
+        .style("font-size", (width / 36) + "px")
+        .style("font-weight", "bold")
+        .text("Average Listing Price by Neighborhood");
     });
 });
 
@@ -780,7 +821,11 @@
 			</section>
         -->
 
+
+
+
         <!-- Five -->
+        <!--
 
 			<section id="five" class="main style1">
 				<div class="container">
@@ -1099,7 +1144,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 				</div>
 			</section>
 
-
+-->
 
 
 		<!-- Footer -->
