@@ -742,8 +742,7 @@ var key = csvg
           .attr("stroke", "darkGrey");
 
 
-    var titleG = csvg.append("g").attr("neighborhoodTitle");
-    d3.select("g#neighborhoodTitle").append("text")
+    csvg.append("g").append("text")
         .attr("id", "chorTitle")
         .attr("x", width * 0.52)
         .attr("y", (height / 16))
