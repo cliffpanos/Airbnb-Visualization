@@ -76,7 +76,7 @@ div.tooltip {
   .style("opacity", 0);
 
   // Load in my states data
-  d3.csv("../data/listings.csv", function(data) {
+  d3.csv("../data/listings-small.csv", function(data) {
 	var neighbourhoodAvg = d3.nest()
 		.key(function(d) { return d.neighbourhood_cleansed; })
 		.rollup(function(v) { return d3.mean(v, function(d) {return d.price; }); })

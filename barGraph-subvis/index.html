@@ -82,7 +82,7 @@ var ratingSelected = 1;
 var presentGraph = function(neighborhood, rating) {
     console.log(neighborhood);
 
-    d3.csv("../data/listings.csv", function(error, data){
+    d3.csv("../data/listings-min.csv", function(error, data){
     console.log("Data length: " + data.length);
 
     var roomCounts = [];

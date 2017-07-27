@@ -16,7 +16,7 @@
 </style>
 <script src="../assets/js/d3.min.js"></script>
 <script>
-d3.csv("../data/listings.csv", function(error, data){
+d3.csv("../data/listings-min.csv", function(error, data){
     var toIgnore = ["apartment", "a", "at", "the", "to", "and", "of", "with", "near", "for", "in", "on", "y", "en", "bcn", "de", "el", "con", "piso"];
 
     //create a dictionary of the unique word:count pairs

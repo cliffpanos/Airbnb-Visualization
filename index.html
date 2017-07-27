@@ -348,7 +348,7 @@
 
 
 
-    d3.csv("data/listings.csv", function(error, data){
+    d3.csv("data/listings-min.csv", function(error, data){
         var toIgnore = ["apartment", "a", "at", "the", "to", "and", "of", "with", "near", "for", "in", "on", "el", "y", "de", "en", "con", "piso", "doble", "ramblas", "la", "room", "habitaciin"];
 
         //create a dictionary of the unique word:count pairs
@@ -571,7 +571,7 @@ div.tooltip {
 
 
   // Load in my states data
-  d3.csv("data/listings.csv", function(data) {
+  d3.csv("data/listings-min.csv", function(data) {
 	var neighbourhoodAvg = d3.nest()
 		.key(function(d) { return d.neighbourhood_cleansed; })
 		.rollup(function(v) { return d3.mean(v, function(d) {return d.price; }); })
@@ -654,6 +654,11 @@ div.tooltip {
                 d3.select(this)
 				.transition().duration(500)
 				.style("fill", "orange");
+                d3.select("text#neighborhoodTitle")
+                .transition().duration(250)
+                .style("fill", "white").remove();
+                d3.select("g#neighborhoodTitle")
+                .transition().duration(250).remove();
                 console.log("Clicked! " + d.properties.neighbourhood);
                 presentGraph(d.properties.neighbourhood);
             });
@@ -737,8 +742,8 @@ var key = csvg
           .attr("stroke", "darkGrey");
 
 
-    csvg.append("g")
-        .append("text")
+    var titleG = csvg.append("g").attr("neighborhoodTitle");
+    d3.select("g#neighborhoodTitle").append("text")
         .attr("id", "chorTitle")
         .attr("x", width * 0.52)
         .attr("y", (height / 16))
@@ -747,7 +752,20 @@ var key = csvg
         .style("font-size", (width / 15) + "px")
         .style("font-weight", "bold")
         .text("Average Listing Price by Neighborhood");
+
+    csvg.append("g")
+        .append("text")
+        .attr("id", "neighborhoodTitle")
+        .attr("x", width * 1.05)
+        .attr("y", (height-63))
+        //.attr("text-align", "left")
+        .attr("text-anchor", "right")
+        .style("font-size", (width / 18) + "px")
+        .style("font-weight", "light")
+        .text("Select a Neighborhood...");
+
     });
+
 });
 
 
@@ -856,7 +874,7 @@ function computePrices(data) {
 }
 
 
-d3.csv("data/listings.csv", function(error, data) {
+d3.csv("data/listings-min.csv", function(error, data) {
 
     console.log("Data length: " + data.length);
     DATA = data;
